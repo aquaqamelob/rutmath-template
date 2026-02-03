@@ -46,6 +46,18 @@ import myapplication.composeapp.generated.resources.player2
 import myapplication.composeapp.generated.resources.battle_game_ended
 import myapplication.composeapp.generated.resources.yes
 import myapplication.composeapp.generated.resources.no
+import myapplication.composeapp.generated.resources.play_again
+import myapplication.composeapp.generated.resources.back_to_menu
+import myapplication.composeapp.generated.resources.player_wins
+import myapplication.composeapp.generated.resources.its_a_tie
+import myapplication.composeapp.generated.resources.round_counter
+import myapplication.composeapp.generated.resources.both_correct
+import myapplication.composeapp.generated.resources.both_wrong
+import myapplication.composeapp.generated.resources.waiting
+import myapplication.composeapp.generated.resources.correct
+import myapplication.composeapp.generated.resources.wrong
+import myapplication.composeapp.generated.resources.answer_submitted
+import myapplication.composeapp.generated.resources.check
 
 data class PvPQuestion(
     val question: String,
@@ -75,6 +87,16 @@ fun PvPBattleScreen(
     val gameEndedText = stringResource(Res.string.battle_game_ended)
     val yesText = stringResource(Res.string.yes)
     val noText = stringResource(Res.string.no)
+    val playAgainText = stringResource(Res.string.play_again)
+    val backToMenuText = stringResource(Res.string.back_to_menu)
+    val itsATieText = stringResource(Res.string.its_a_tie)
+    val bothCorrectText = stringResource(Res.string.both_correct)
+    val bothWrongText = stringResource(Res.string.both_wrong)
+    val waitingText = stringResource(Res.string.waiting)
+    val correctText = stringResource(Res.string.correct)
+    val wrongText = stringResource(Res.string.wrong)
+    val answerSubmittedText = stringResource(Res.string.answer_submitted)
+    val checkText = stringResource(Res.string.check)
     
     fun generateNewQuestion(): PvPQuestion {
         val a = (1..12).random()
@@ -161,9 +183,9 @@ fun PvPBattleScreen(
             
             Text(
                 text = when {
-                    player1Score > player2Score -> "$player1Name Wins! 🏆"
-                    player2Score > player1Score -> "$player2Name Wins! 🏆"
-                    else -> "It's a Tie! 🤝"
+                    player1Score > player2Score -> stringResource(Res.string.player_wins, player1Name)
+                    player2Score > player1Score -> stringResource(Res.string.player_wins, player2Name)
+                    else -> itsATieText
                 },
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary
@@ -223,7 +245,7 @@ fun PvPBattleScreen(
                     containerColor = Color(0xFF4CAF50)
                 )
             ) {
-                Text("Play Again", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(playAgainText, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
             
             Spacer(Modifier.height(12.dp))
@@ -235,7 +257,7 @@ fun PvPBattleScreen(
                     containerColor = MaterialTheme.colorScheme.secondary
                 )
             ) {
-                Text("Back to Menu", fontSize = 18.sp)
+                Text(backToMenuText, fontSize = 18.sp)
             }
         }
         return
@@ -293,7 +315,7 @@ fun PvPBattleScreen(
                 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "Round $roundNumber / $totalRounds",
+                        text = stringResource(Res.string.round_counter, roundNumber, totalRounds),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
@@ -302,8 +324,8 @@ fun PvPBattleScreen(
                             text = when (lastRoundWinner) {
                                 1 -> "$player1Name ✓"
                                 2 -> "$player2Name ✓"
-                                0 -> "Both ✓"
-                                else -> "Both ✗"
+                                0 -> bothCorrectText
+                                else -> bothWrongText
                             },
                             style = MaterialTheme.typography.bodySmall,
                             color = when (lastRoundWinner) {
@@ -365,6 +387,11 @@ fun PlayerGameArea(
     onSubmit: () -> Unit,
     playerColor: Color
 ) {
+    val waitingText = stringResource(Res.string.waiting)
+    val correctText = stringResource(Res.string.correct)
+    val wrongText = stringResource(Res.string.wrong)
+    val answerSubmittedText = stringResource(Res.string.answer_submitted)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -386,7 +413,7 @@ fun PlayerGameArea(
             )
             if (hasAnswered && !showResult) {
                 Text(
-                    text = "Waiting...",
+                    text = waitingText,
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
@@ -416,7 +443,7 @@ fun PlayerGameArea(
         // Result indicator
         if (showResult) {
             Text(
-                text = if (isCorrect) "✓ Correct!" else "✗ Wrong",
+                text = if (isCorrect) correctText else wrongText,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = if (isCorrect) Color(0xFF4CAF50) else Color(0xFFF44336)
@@ -439,7 +466,7 @@ fun PlayerGameArea(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "✓ Answer Submitted",
+                    text = answerSubmittedText,
                     style = MaterialTheme.typography.titleMedium,
                     color = playerColor
                 )
@@ -457,15 +484,17 @@ fun PvPNumberPad(
     canSubmit: Boolean,
     accentColor: Color
 ) {
+    val checkText = stringResource(Res.string.check)
+
     Column(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         // Row 1: 1 2 3
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             PvPKeyButton("1", Modifier.weight(1f)) { onNumberClick("1") }
             PvPKeyButton("2", Modifier.weight(1f)) { onNumberClick("2") }
@@ -475,7 +504,7 @@ fun PvPNumberPad(
         // Row 2: 4 5 6
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             PvPKeyButton("4", Modifier.weight(1f)) { onNumberClick("4") }
             PvPKeyButton("5", Modifier.weight(1f)) { onNumberClick("5") }
@@ -485,7 +514,7 @@ fun PvPNumberPad(
         // Row 3: 7 8 9
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             PvPKeyButton("7", Modifier.weight(1f)) { onNumberClick("7") }
             PvPKeyButton("8", Modifier.weight(1f)) { onNumberClick("8") }
@@ -495,7 +524,7 @@ fun PvPNumberPad(
         // Row 4: C 0 ⌫
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             PvPKeyButton("C", Modifier.weight(1f), Color(0xFFFF9800)) { onClear() }
             PvPKeyButton("0", Modifier.weight(1f)) { onNumberClick("0") }
@@ -505,7 +534,7 @@ fun PvPNumberPad(
         // Row 5: Minus and Submit
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             PvPKeyButton("-", Modifier.weight(1f)) { onNumberClick("-") }
             Button(
@@ -513,15 +542,15 @@ fun PvPNumberPad(
                 enabled = canSubmit,
                 modifier = Modifier
                     .weight(2f)
-                    .height(48.dp),
+                    .height(40.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = accentColor
                 )
             ) {
                 Text(
-                    text = "CHECK ✓",
-                    fontSize = 16.sp,
+                    text = checkText,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -538,7 +567,7 @@ fun PvPKeyButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(48.dp),
+        modifier = modifier.height(40.dp),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = backgroundColor
@@ -546,7 +575,7 @@ fun PvPKeyButton(
     ) {
         Text(
             text = text,
-            fontSize = 18.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onPrimaryContainer
         )

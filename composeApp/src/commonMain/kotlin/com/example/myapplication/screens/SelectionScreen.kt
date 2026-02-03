@@ -26,6 +26,10 @@ import myapplication.composeapp.generated.resources.ic_dumbbell_solid
 import myapplication.composeapp.generated.resources.fragment_modes_instruction
 import myapplication.composeapp.generated.resources.fragment_modes_add_sub
 import myapplication.composeapp.generated.resources.fragment_modes_mul_div
+import myapplication.composeapp.generated.resources.fragment_modes_divisibility
+import myapplication.composeapp.generated.resources.fragment_modes_units
+import myapplication.composeapp.generated.resources.fragment_modes_table
+import myapplication.composeapp.generated.resources.back
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -33,6 +37,10 @@ fun SelectionScreen(navController: NavController) {
     val instructionText = stringResource(Res.string.fragment_modes_instruction)
     val addSubText = stringResource(Res.string.fragment_modes_add_sub)
     val mulDivText = stringResource(Res.string.fragment_modes_mul_div)
+    val divisibilityText = stringResource(Res.string.fragment_modes_divisibility)
+    val unitConversionText = stringResource(Res.string.fragment_modes_units)
+    val multiplicationTableText = stringResource(Res.string.fragment_modes_table)
+    val backText = stringResource(Res.string.back)
     
     Column(
         modifier = Modifier
@@ -60,17 +68,17 @@ fun SelectionScreen(navController: NavController) {
         }
 
         // 3. Divisibility
-        MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = "Divisibility") {
+        MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = divisibilityText) {
             navController.navigate(route = Screen.GameDivisibility.route)
         }
 
         // 4. Unit Conversion
-        MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = "Unit Conversion") {
+        MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = unitConversionText) {
             navController.navigate(route = Screen.GameUnitConversion.route)
         }
 
         // 5. Multiplication Table
-        MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = "Multiplication Table") {
+        MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = multiplicationTableText) {
             navController.navigate(route = Screen.GameMultiplicationTable.route)
         }
 
@@ -78,7 +86,7 @@ fun SelectionScreen(navController: NavController) {
         Button(onClick = {
             navController.popBackStack()
         }) {
-            Text("Back")
+            Text(backText)
         }
     }
 }

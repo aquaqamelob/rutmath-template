@@ -37,14 +37,34 @@ import androidx.navigation.NavController
 import com.example.myapplication.Database
 import kotlinx.coroutines.launch
 import kotlin.random.Random
+import org.jetbrains.compose.resources.stringResource
+import myapplication.composeapp.generated.resources.Res
+import myapplication.composeapp.generated.resources.fragment_modes_add_sub
+import myapplication.composeapp.generated.resources.fragment_modes_mul_div
+import myapplication.composeapp.generated.resources.fragment_modes_divisibility
+import myapplication.composeapp.generated.resources.fragment_modes_units
+import myapplication.composeapp.generated.resources.fragment_modes_table
+import myapplication.composeapp.generated.resources.question_counter
+import myapplication.composeapp.generated.resources.game_over
+import myapplication.composeapp.generated.resources.result_excellent
+import myapplication.composeapp.generated.resources.result_great
+import myapplication.composeapp.generated.resources.result_good
+import myapplication.composeapp.generated.resources.result_practice
+import myapplication.composeapp.generated.resources.score_saved
+import myapplication.composeapp.generated.resources.play_again
+import myapplication.composeapp.generated.resources.back
+import myapplication.composeapp.generated.resources.check
+import myapplication.composeapp.generated.resources.yes
+import myapplication.composeapp.generated.resources.no
+import myapplication.composeapp.generated.resources.divisibility_question
 
 // Game modes enum
-enum class GameMode(val title: String) {
-    ADD_SUBTRACT("Addition & Subtraction"),
-    MULTIPLY_DIVIDE("Multiplication & Division"),
-    DIVISIBILITY("Divisibility"),
-    UNIT_CONVERSION("Unit Conversion"),
-    MULTIPLICATION_TABLE("Multiplication Table")
+enum class GameMode {
+    ADD_SUBTRACT,
+    MULTIPLY_DIVIDE,
+    DIVISIBILITY,
+    UNIT_CONVERSION,
+    MULTIPLICATION_TABLE
 }
 
 // Question data class that supports different answer types
@@ -205,6 +225,18 @@ fun GameScreen(
     
     var playerName by remember { mutableStateOf<String?>(null) }
     
+    // Get localized strings
+    val gameModeTitle = when (gameMode) {
+        GameMode.ADD_SUBTRACT -> stringResource(Res.string.fragment_modes_add_sub)
+        GameMode.MULTIPLY_DIVIDE -> stringResource(Res.string.fragment_modes_mul_div)
+        GameMode.DIVISIBILITY -> stringResource(Res.string.fragment_modes_divisibility)
+        GameMode.UNIT_CONVERSION -> stringResource(Res.string.fragment_modes_units)
+        GameMode.MULTIPLICATION_TABLE -> stringResource(Res.string.fragment_modes_table)
+    }
+    val questionCounterText = stringResource(Res.string.question_counter, currentQuestion, totalQuestions)
+    val yesText = stringResource(Res.string.yes)
+    val noText = stringResource(Res.string.no)
+    
     // Load player name
     LaunchedEffect(playerId) {
         if (playerId != null && database != null) {
@@ -263,7 +295,7 @@ fun GameScreen(
         }
 
         Text(
-            text = gameMode.title,
+            text = gameModeTitle,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -304,7 +336,7 @@ fun GameScreen(
 
         // Question display
         Text(
-            text = "Question $currentQuestion / $totalQuestions",
+            text = questionCounterText,
             style = MaterialTheme.typography.bodyMedium
         )
         
@@ -390,13 +422,21 @@ fun GameOverContent(
     onPlayAgain: () -> Unit,
     onBack: () -> Unit
 ) {
+    val gameOverText = stringResource(Res.string.game_over)
+    val resultExcellentText = stringResource(Res.string.result_excellent)
+    val resultGreatText = stringResource(Res.string.result_great)
+    val resultGoodText = stringResource(Res.string.result_good)
+    val resultPracticeText = stringResource(Res.string.result_practice)
+    val playAgainText = stringResource(Res.string.play_again)
+    val backText = stringResource(Res.string.back)
+    
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "🎉 Game Over! 🎉",
+            text = gameOverText,
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold
         )
@@ -415,18 +455,19 @@ fun GameOverContent(
         val percentage = (score.toFloat() / totalQuestions * 100).toInt()
         Text(
             text = when {
-                percentage >= 90 -> "Excellent! 🌟"
-                percentage >= 70 -> "Great job! 👍"
-                percentage >= 50 -> "Good effort! 💪"
-                else -> "Keep practicing! 📚"
+                percentage >= 90 -> resultExcellentText
+                percentage >= 70 -> resultGreatText
+                percentage >= 50 -> resultGoodText
+                else -> resultPracticeText
             },
             style = MaterialTheme.typography.titleLarge
         )
         
         if (scoreSaved && playerName != null) {
             Spacer(Modifier.height(8.dp))
+            val scoreSavedText = stringResource(Res.string.score_saved, playerName)
             Text(
-                text = "Score saved for $playerName!",
+                text = scoreSavedText,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -438,7 +479,7 @@ fun GameOverContent(
             onClick = onPlayAgain,
             modifier = Modifier.fillMaxWidth(0.7f).height(56.dp)
         ) {
-            Text("Play Again", fontSize = 18.sp)
+            Text(playAgainText, fontSize = 18.sp)
         }
 
         Spacer(Modifier.height(12.dp))
@@ -450,7 +491,7 @@ fun GameOverContent(
                 containerColor = MaterialTheme.colorScheme.secondary
             )
         ) {
-            Text("Back", fontSize = 18.sp)
+            Text(backText, fontSize = 18.sp)
         }
     }
 }
@@ -460,6 +501,9 @@ fun YesNoButtons(
     onYes: () -> Unit,
     onNo: () -> Unit
 ) {
+    val yesText = stringResource(Res.string.yes)
+    val noText = stringResource(Res.string.no)
+    
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -477,7 +521,7 @@ fun YesNoButtons(
             shape = RoundedCornerShape(16.dp)
         ) {
             Text(
-                text = "YES",
+                text = yesText.uppercase(),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -494,7 +538,7 @@ fun YesNoButtons(
             shape = RoundedCornerShape(16.dp)
         ) {
             Text(
-                text = "NO",
+                text = noText.uppercase(),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -510,6 +554,8 @@ fun FullScreenNumberPad(
     onSubmit: () -> Unit,
     canSubmit: Boolean
 ) {
+    val checkText = stringResource(Res.string.check)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -575,7 +621,7 @@ fun FullScreenNumberPad(
                 )
             ) {
                 Text(
-                    text = "CHECK ✓",
+                    text = checkText,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold
                 )

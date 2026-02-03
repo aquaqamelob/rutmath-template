@@ -38,6 +38,7 @@ import kotlinx.coroutines.launch
 import myapplication.composeapp.generated.resources.Res
 import myapplication.composeapp.generated.resources.menu_settings
 import myapplication.composeapp.generated.resources.fragment_settings_select_language
+import myapplication.composeapp.generated.resources.back
 import org.jetbrains.compose.resources.stringResource
 
 data class LanguageOption(
@@ -51,8 +52,17 @@ fun Settings(navController: NavController, database: Database) {
 
     val languageOptions = listOf(
         LanguageOption("en", "English"),
+        LanguageOption("pl", "Polski"),
+        LanguageOption("fr", "Français"),
+        LanguageOption("pt", "Português"),
+        LanguageOption("es", "Español"),
+        LanguageOption("el", "Ελληνικά"),
+        LanguageOption("nl", "Nederlands"),
+        LanguageOption("sk", "Slovenčina"),
+        LanguageOption("it", "Italiano"),
         LanguageOption("de", "Deutsch"),
-        LanguageOption("pl", "Polski")
+        LanguageOption("hu", "Magyar"),
+        LanguageOption("cs", "Čeština")
     )
 
     var selectedLanguage by remember { mutableStateOf(languageOptions[0]) }
@@ -60,6 +70,7 @@ fun Settings(navController: NavController, database: Database) {
     
     val settingsTitle = stringResource(Res.string.menu_settings)
     val selectLanguageText = stringResource(Res.string.fragment_settings_select_language)
+    val backText = stringResource(Res.string.back)
 
     // Load current language from database on first composition
     LaunchedEffect(Unit) {
@@ -179,7 +190,7 @@ fun Settings(navController: NavController, database: Database) {
         Button(onClick = {
             navController.popBackStack()
         }) {
-            Text("Back")
+            Text(backText)
         }
     }
 }

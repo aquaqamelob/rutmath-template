@@ -33,6 +33,9 @@ import com.example.myapplication.screens.SelectionScreen
 import com.example.myapplication.screens.Settings
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import myapplication.composeapp.generated.resources.Res
+import myapplication.composeapp.generated.resources.player1
+import myapplication.composeapp.generated.resources.player2
+import org.jetbrains.compose.resources.stringResource
 
 import myapplication.composeapp.generated.resources.allDrawableResources
 import org.jetbrains.compose.resources.DrawableResource
@@ -104,10 +107,12 @@ fun App(driver: SqlDriver) {
                 }
                 
                 composable(Screen.PvP.route) {
+                    val player1Text = stringResource(Res.string.player1)
+                    val player2Text = stringResource(Res.string.player2)
                     PvPBattleScreen(
                         navController = navController,
-                        player1Name = "Player 1",
-                        player2Name = "Player 2"
+                        player1Name = player1Text,
+                        player2Name = player2Text
                     )
                 }
 
