@@ -93,3 +93,53 @@ SELECT setting_value FROM appSettings WHERE setting_key = 'current_player_id';
 setCurrentPlayerId:
 INSERT OR REPLACE INTO appSettings (setting_key, setting_value) VALUES ('current_player_id', ?);
 
+-- Level Progress table for tracking player progress through levels
+CREATE TABLE IF NOT EXISTS levelProgress (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    player_id INTEGER NOT NULL,
+    game_mode TEXT NOT NULL,
+    level INTEGER NOT NULL,
+    completed INTEGER NOT NULL DEFAULT 0,
+    best_score INTEGER NOT NULL DEFAULT 0,
+    attempts INTEGER NOT NULL DEFAULT 0,
+    UNIQUE(player_id, game_mode, level)
+);
+
+-- Get level progress for a player and game mode
+getLevelProgress:
+SELECT * FROM levelProgress 
+WHERE player_id = ? AND game_mode = ? AND level = ?;
+
+-- Get all level progress for a player and game mode
+getAllLevelProgressForMode:
+SELECT * FROM levelProgress 
+WHERE player_id = ? AND game_mode = ?
+ORDER BY level ASC;
+
+-- Insert or update level progress
+upsertLevelProgress:
+INSERT OR REPLACE INTO levelProgress (player_id, game_mode, level, completed, best_score, attempts)
+VALUES (?, ?, ?, ?, ?, ?);
+
+-- Mark level as completed
+markLevelCompleted:
+UPDATE levelProgress 
+SET completed = 1, best_score = MAX(best_score, ?), attempts = attempts + 1
+WHERE player_id = ? AND game_mode = ? AND level = ?;
+
+-- Update level attempt (when not 100%) - insert if not exists
+insertLevelAttemptIfNotExists:
+INSERT OR IGNORE INTO levelProgress (player_id, game_mode, level, completed, best_score, attempts)
+VALUES (?, ?, ?, 0, 0, 0);
+
+-- Update level attempt - increment attempts and update best score if higher
+updateLevelAttemptScore:
+UPDATE levelProgress 
+SET best_score = MAX(best_score, ?), attempts = attempts + 1
+WHERE player_id = ? AND game_mode = ? AND level = ?;
+
+-- Check if previous level is completed (for unlocking)
+isPreviousLevelCompleted:
+SELECT completed FROM levelProgress 
+WHERE player_id = ? AND game_mode = ? AND level = ?;
+

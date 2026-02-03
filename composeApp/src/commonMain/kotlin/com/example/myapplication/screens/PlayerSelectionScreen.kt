@@ -53,6 +53,15 @@ import myapplication.composeapp.generated.resources.choose_player_nick_exist
 import myapplication.composeapp.generated.resources.nick_empty
 import myapplication.composeapp.generated.resources.cancel
 import myapplication.composeapp.generated.resources.save
+import myapplication.composeapp.generated.resources.back
+import myapplication.composeapp.generated.resources.no_players_yet
+import myapplication.composeapp.generated.resources.create_first_player
+import myapplication.composeapp.generated.resources.create_player
+import myapplication.composeapp.generated.resources.add_player
+import myapplication.composeapp.generated.resources.nickname
+import myapplication.composeapp.generated.resources.error_creating_player
+import myapplication.composeapp.generated.resources.high_score_games
+import myapplication.composeapp.generated.resources.star
 
 @Composable
 fun PlayerSelectionScreen(
@@ -83,6 +92,14 @@ fun PlayerSelectionScreen(
     val nickEmptyError = stringResource(Res.string.nick_empty)
     val cancelText = stringResource(Res.string.cancel)
     val saveText = stringResource(Res.string.save)
+    val backText = stringResource(Res.string.back)
+    val noPlayersYetText = stringResource(Res.string.no_players_yet)
+    val createFirstPlayerText = stringResource(Res.string.create_first_player)
+    val createPlayerText = stringResource(Res.string.create_player)
+    val addPlayerText = stringResource(Res.string.add_player)
+    val nicknameText = stringResource(Res.string.nickname)
+    val errorCreatingPlayerText = stringResource(Res.string.error_creating_player)
+    val starText = stringResource(Res.string.star)
 
     Column(
         modifier = Modifier
@@ -107,17 +124,17 @@ fun PlayerSelectionScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "No players yet!",
+                    text = noPlayersYetText,
                     style = MaterialTheme.typography.headlineSmall
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "Create your first player to get started",
+                    text = createFirstPlayerText,
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(Modifier.height(16.dp))
                 Button(onClick = { showCreateDialog = true }) {
-                    Text("Create Player")
+                    Text(createPlayerText)
                 }
             }
         } else {
@@ -130,6 +147,8 @@ fun PlayerSelectionScreen(
                     PlayerCard(
                         player = player,
                         isSelected = selectedPlayer?.id == player.id,
+                        highScoreGamesFormat = stringResource(Res.string.high_score_games, player.high_score.toInt(), player.games_played.toInt()),
+                        starContentDescription = starText,
                         onClick = {
                             selectedPlayer = player
                             coroutineScope.launch {
@@ -153,7 +172,7 @@ fun PlayerSelectionScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(onClick = { navController.popBackStack() }) {
-                Text("Back")
+                Text(backText)
             }
             
             FloatingActionButton(
@@ -163,7 +182,7 @@ fun PlayerSelectionScreen(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_add_black_24dp),
-                    contentDescription = "Add player",
+                    contentDescription = addPlayerText,
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -187,7 +206,7 @@ fun PlayerSelectionScreen(
                             newPlayerNickname = it
                             errorMessage = null
                         },
-                        label = { Text("Nickname") },
+                        label = { Text(nicknameText) },
                         isError = errorMessage != null,
                         singleLine = true
                     )
@@ -216,7 +235,7 @@ fun PlayerSelectionScreen(
                                     newPlayerNickname = ""
                                     errorMessage = null
                                 } catch (e: Exception) {
-                                    errorMessage = "Error creating player"
+                                    errorMessage = errorCreatingPlayerText
                                 }
                             }
                         }
@@ -244,6 +263,8 @@ fun PlayerSelectionScreen(
 fun PlayerCard(
     player: Player,
     isSelected: Boolean,
+    highScoreGamesFormat: String,
+    starContentDescription: String,
     onClick: () -> Unit
 ) {
     Card(
@@ -271,14 +292,14 @@ fun PlayerCard(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "High Score: ${player.high_score} | Games: ${player.games_played}",
+                    text = highScoreGamesFormat,
                     style = MaterialTheme.typography.bodySmall
                 )
             }
             if (player.high_score > 0) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_star_yellow_24dp),
-                    contentDescription = "Star",
+                    contentDescription = starContentDescription,
                     modifier = Modifier.size(24.dp),
                     tint = Color(0xFFFFD700)
                 )
