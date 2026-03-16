@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -57,35 +59,44 @@ fun SelectionScreen(navController: NavController) {
         )
         Spacer(Modifier.height(16.dp))
 
-        // 1. Addition & Subtraction
-        MenuButton(iconRes = Res.drawable.ic_add_sub, text = addSubText) {
-            navController.navigate(route = Screen.GameAddSubtract.route)
-        }
-
-        // 2. Multiplication & Division
-        MenuButton(iconRes = Res.drawable.ic_mult_div, text = mulDivText) {
-            navController.navigate(route = Screen.GameMultiplyDivide.route)
-        }
-
-        // 3. Divisibility
-        MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = divisibilityText) {
-            navController.navigate(route = Screen.GameDivisibility.route)
-        }
-
-        // 4. Unit Conversion
-        MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = unitConversionText) {
-            navController.navigate(route = Screen.GameUnitConversion.route)
-        }
-
-        // 5. Multiplication Table
-        MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = multiplicationTableText) {
-            navController.navigate(route = Screen.GameMultiplicationTable.route)
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                MenuButton(iconRes = Res.drawable.ic_add_sub, text = addSubText) {
+                    navController.navigate(route = Screen.GameAddSubtract.route)
+                }
+            }
+            item {
+                MenuButton(iconRes = Res.drawable.ic_mult_div, text = mulDivText) {
+                    navController.navigate(route = Screen.GameMultiplyDivide.route)
+                }
+            }
+            item {
+                MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = divisibilityText) {
+                    navController.navigate(route = Screen.GameDivisibility.route)
+                }
+            }
+            item {
+                MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = unitConversionText) {
+                    navController.navigate(route = Screen.GameUnitConversion.route)
+                }
+            }
+            item {
+                MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = multiplicationTableText) {
+                    navController.navigate(route = Screen.GameMultiplicationTable.route)
+                }
+            }
+            item {
+                MenuButton(iconRes = Res.drawable.ic_dumbbell_solid, text = "Levels") {
+                    navController.navigate(route = Screen.Levels.route)
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
-        Button(onClick = {
-            navController.popBackStack()
-        }) {
+        Button(onClick = { navController.popBackStack() }) {
             Text(backText)
         }
     }

@@ -213,7 +213,25 @@ fun GameScreen(
     playerId: Long? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val totalQuestions = 10
+
+    // --- LEVEL STATE ---
+    // Start at the first level for this mode. If none is defined, fall back to
+    // a synthetic "infinite practice" level with 10 questions.
+    var currentLevel by remember(gameMode) {
+        mutableStateOf(
+            LevelSystem.firstLevelForMode(gameMode)
+                ?: Level(
+                    id = 0,
+                    title = "Practice",
+                    gameMode = gameMode,
+                    difficulty = Difficulty.EASY,
+                    totalQuestions = 10,
+                    requiredCorrect = 0
+                )
+        )
+    }
+
+    val totalQuestions = currentLevel.totalQuestions
 
     var currentQuestionData by remember { mutableStateOf<GameQuestion?>(null) }
     var userAnswer by remember { mutableStateOf("") }
@@ -317,12 +335,27 @@ fun GameScreen(
                 saveScore()
             }
             
+            val passed = LevelSystem.isPassed(currentLevel, score)
+
             GameOverContent(
                 score = score,
                 totalQuestions = totalQuestions,
                 playerName = playerName,
                 scoreSaved = scoreSaved,
-                onPlayAgain = {
+                currentLevel = currentLevel,
+                passed = passed,
+                onNextLevel = {
+                    if (!passed) return@GameOverContent
+                    val next = LevelSystem.nextLevel(currentLevel) ?: return@GameOverContent
+
+                    currentLevel = next
+                    currentQuestion = 1
+                    score = 0
+                    gameOver = false
+                    scoreSaved = false
+                    newQuestion()
+                },
+                onReplayLevel = {
                     currentQuestion = 1
                     score = 0
                     gameOver = false
@@ -419,7 +452,10 @@ fun GameOverContent(
     totalQuestions: Int,
     playerName: String?,
     scoreSaved: Boolean,
-    onPlayAgain: () -> Unit,
+    currentLevel: Level,
+    passed: Boolean,
+    onNextLevel: () -> Unit,
+    onReplayLevel: () -> Unit,
     onBack: () -> Unit
 ) {
     val gameOverText = stringResource(Res.string.game_over)
@@ -436,7 +472,7 @@ fun GameOverContent(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = gameOverText,
+            text = "$gameOverText – Level ${currentLevel.id}",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold
         )
@@ -476,13 +512,26 @@ fun GameOverContent(
         Spacer(Modifier.height(32.dp))
 
         Button(
-            onClick = onPlayAgain,
+            onClick = onReplayLevel,
             modifier = Modifier.fillMaxWidth(0.7f).height(56.dp)
         ) {
-            Text(playAgainText, fontSize = 18.sp)
+            Text("$playAgainText (Level ${currentLevel.id})", fontSize = 18.sp)
         }
 
         Spacer(Modifier.height(12.dp))
+
+        // Only show "Next level" if one exists AND level is passed.
+        val hasNextLevel = LevelSystem.nextLevel(currentLevel) != null && passed
+        if (hasNextLevel) {
+            Button(
+                onClick = onNextLevel,
+                modifier = Modifier.fillMaxWidth(0.7f).height(56.dp)
+            ) {
+                Text("Next Level ${currentLevel.id + 1}", fontSize = 18.sp)
+            }
+
+            Spacer(Modifier.height(12.dp))
+        }
 
         Button(
             onClick = onBack,
