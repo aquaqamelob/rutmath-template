@@ -30,6 +30,7 @@ import com.example.myapplication.screens.GameScreen
 import com.example.myapplication.screens.PlayerSelectionScreen
 import com.example.myapplication.screens.PvPBattleScreen
 import com.example.myapplication.screens.SelectionScreen
+import com.example.myapplication.screens.LevelsScreen
 import com.example.myapplication.screens.Settings
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import myapplication.composeapp.generated.resources.Res
@@ -44,6 +45,7 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Details : Screen("details")
     object Selection : Screen("selection")
+    object Levels : Screen("levels")
     object PlayerSelection : Screen("player-selection")
     object PvP : Screen("pvp")
     object Leaderboard : Screen("leaderboard")
@@ -168,6 +170,10 @@ fun App(driver: SqlDriver) {
 
                 composable(Screen.Selection.route) {
                     SelectionScreen(navController = navController)
+                }
+
+                composable(Screen.Levels.route) {
+                    LevelsScreen(navController = navController)
                 }
             }
         }
